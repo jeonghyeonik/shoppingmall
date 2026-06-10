@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>주문 완료</title>
+    <style>
+        body {
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0; padding: 0;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100vh;
+        }
+        .success-box {
+            background: white; padding: 40px; border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            text-align: center; max-width: 450px; width: 90%;
+            border: 1px solid #e9ecef; box-sizing: border-box;
+        }
+        .icon { font-size: 60px; margin-bottom: 20px; display: inline-block; animation: pop 0.5s ease; }
+        h2 { font-size: 24px; font-weight: 800; margin: 0 0 10px 0; color: #212529; }
+        p { color: #6c757d; font-size: 14px; margin: 0 0 30px 0; }
+
+        .receipt-card {
+            background-color: #f8f9fa; border-radius: 8px; padding: 20px;
+            text-align: left; font-size: 14px; margin-bottom: 30px; border: 1px solid #f1f3f5;
+        }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .receipt-row:last-child { margin-bottom: 0; padding-top: 10px; border-top: 1px dashed #dee2e6; font-weight: bold; }
+        .label { color: #868e96; }
+
+        .btn-group { display: flex; gap: 10px; }
+        .btn {
+            flex: 1; padding: 12px 0; text-decoration: none; font-weight: bold; font-size: 14px;
+            border-radius: 6px; text-align: center; transition: all 0.2s;
+        }
+        .btn-home { background-color: #f1f3f5; color: #495057; }
+        .btn-home:hover { background-color: #e9ecef; }
+        .btn-mypage { background-color: #007bff; color: white; box-shadow: 0 4px 12px rgba(0,123,255,0.2); }
+        .btn-mypage:hover { background-color: #0056b3; }
+
+        @keyframes pop {
+            0% { transform: scale(0.5); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="success-box">
+        <span class="icon">🎉</span>
+        <h2>주문이 완료되었습니다!</h2>
+        <p>고객님의 소중한 주문이 정상적으로 접수되었습니다.</p>
+
+        <div class="receipt-card">
+            <div class="receipt-row">
+                <span class="label">주문 번호</span>
+                <span><%= order.merchant_uid %></span>
+            </div>
+            <div class="receipt-row">
+                <span class="label">결제 상품</span>
+                <strong><%= order.product_name %></strong>
+            </div>
+            <div class="receipt-row">
+                <span class="label">총 결제금액</span>
+                <span style="color:#e03131;"><%= Number(order.amount).toLocaleString() %>원</span>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <a href="/" class="btn btn-home">쇼핑 계속하기</a>
+            <a href="/mypage" class="btn btn-mypage">주문내역 확인</a>
+        </div>
+    </div>
+
+</body>
+</html>

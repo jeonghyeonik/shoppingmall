@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>장바구니</title>
+    <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+    <style>
+        /* 전체 기본 스타일 초기화 */
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 상단 헤더 & 네비게이션 바 */
+        .header-bar {
+            width: 100%;
+            background-color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .header-container {
+            max-width: 800px;
+            width: 100%;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .logo-area h1 {
+            font-size: 22px;
+            margin: 0;
+            color: #111;
+            font-weight: 800;
+        }
+
+        .menu-links {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .menu-links a {
+            color: #0066cc;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .menu-links a:hover {
+            text-decoration: underline;
+        }
+
+        .user-status {
+            font-size: 14px;
+            color: #495057;
+            background-color: #f1f3f5;
+            padding: 8px 16px;
+            border-radius: 30px;
+        }
+
+        /* 장바구니 메인 컨테이너 */
+        .cart-container {
+            max-width: 800px;
+            width: 100%;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        .cart-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 25px;
+            border-left: 4px solid #111;
+            padding-left: 10px;
+        }
+
+        /* 개별 상품 카드 상자 */
+        .cart-item {
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .item-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1a1a1a;
+        }
+
+        .item-price {
+            font-size: 15px;
+            color: #868e96;
+        }
+
+        /* 조작 컨트롤 구역 */
+        .item-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .quantity-control a {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            line-height: 30px;
+            text-align: center;
+            text-decoration: none;
+            color: #495057;
+            background-color: #f8f9fa;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        .quantity-control a:hover {
+            background-color: #e9ecef;
+        }
+
+        .quantity-num {
+            display: inline-block;
+            min-width: 35px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #212529;
+        }
+
+        /* 🗑삭제 버튼 스타일 */
+        .btn-delete {
+            text-decoration: none;
+            padding: 7px 14px;
+            border: 1px solid #dee2e6;
+            background-color: #fff;
+            color: #495057;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-delete:hover {
+            background-color: #fff5f5;
+            border-color: #ffa8a8;
+            color: #e03131;
+        }
+
+        /* 결제 요약 영역 */
+        .cart-summary {
+            margin-top: 30px;
+            background-color: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-label {
+            font-size: 18px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .total-price {
+            font-size: 24px;
+            font-weight: 800;
+            color: #e03131;
+        }
+
+        /* 하단 조작 버튼 구역 */
+        .cart-actions {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-back {
+            color: #0066cc;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .btn-back:hover {
+            text-decoration: underline;
+        }
+
+        .btn-order {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
+        }
+
+        .btn-order:hover {
+            background-color: #0056b3;
+        }
+
+        /* 빈 장바구니 안내 박스 */
+        .empty-cart {
+            text-align: center;
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 50px 20px;
+            color: #868e96;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-bar">
+        <div class="header-container">
+            <div class="logo-area">
+                <a href="/" style="text-decoration: none; color: inherit;">
+                    <h1>💻 내 쇼핑몰</h1>
+                </a>
+                <div class="menu-links">
+                    <a href="/">상품목록</a>
+                    <a href="/cart">장바구니</a>
+                    <a href="/board">고객센터</a>
+                </div>
+            </div>
+            <div class="user-status">
+                👋 <strong><%= user ? (user.username || user.id) : '고객' %>님</strong> 환영합니다!
+            </div>
+        </div>
+    </div>
+
+    <div class="cart-container">
+        <h2 class="cart-title">🛒 장바구니 내역</h2>
+
+        <% if (items && items.length > 0) { %>
+            <% items.forEach(item => { %>
+                <div class="cart-item">
+                    <div class="item-info">
+                        <span class="item-name">💻 <%= item.name %></span>
+                        <span class="item-price">- ₩<%= Number(item.price).toLocaleString() %></span>
+                    </div>
+
+                    <div class="item-controls">
+                        <div class="quantity-control">
+                            <a href="/cart/update/<%= item.product_id %>/decrease">-</a>
+                            <span class="quantity-num"><%= item.quantity %></span>
+                            <a href="/cart/update/<%= item.product_id %>/increase">+</a>
+                        </div>
+                        <a href="/cart/delete/<%= item.product_id %>" class="btn-delete">삭제</a>
+                    </div>
+                </div>
+            <% }) %>
+
+            <div class="cart-summary">
+                <span class="total-label">최종 결제 금액</span>
+                <span class="total-price"><%= total.toLocaleString() %>원</span>
+            </div>
+
+            <div class="cart-actions">
+                <a href="/" class="btn-back">← 상품 계속 보기</a>
+                <button type="button" id="payBtn" class="btn-order">
+                    💳 주문 및 결제하기
+                </button>
+            </div>
+
+        <% } else { %>
+            <div class="empty-cart">
+                <p style="font-size: 16px; margin-bottom: 20px;">장바구니가 비어 있습니다.</p>
+                <a href="/" class="btn-order" style="display:inline-block; text-decoration:none; background-color: #28a745; box-shadow: 0 4px 12px rgba(40,167,69,0.2);">🛍️ 상품 담으러 가기</a>
+            </div>
+        <% } %>
+
+    </div>
+
+    <script>
+        // 포트원 시스템 초기화
+        IMP.init("imp10391932");
+
+        const payButton = document.getElementById('payBtn');
+        if (payButton) {
+            payButton.addEventListener('click', function () {
+
+
+                let productName = "쇼핑몰 주문 상품";
+                <% if (items && items.length > 0) { %>
+                    const firstItemName = "<%= items[0].name %>";
+                    const totalItemCount = <%= items.length %>;
+                    productName = totalItemCount > 1 ? `${firstItemName} 외 ${totalItemCount - 1}건` : firstItemName;
+                <% } %>
+
+
+                const totalAmount = Number("<%= total %>") || 0;
+                const buyerName = "<%= user ? (user.username || user.id) : '구매자' %>";
+
+                if (totalAmount <= 0) {
+                    alert("장바구니 금액이 올바르지 않습니다.");
+                    return;
+                }
+
+                // 카카오페이 가상 모듈 호출
+                IMP.request_pay({
+                    pg: "kakaopay.TC0ONETIME",
+                    pay_method: "card",
+                    merchant_uid: "order_" + new Date().getTime(),
+                    name: productName,
+                    amount: totalAmount,
+                    buyer_name: buyerName
+                }, function (rsp) {
+                    if (rsp.success) {
+
+                        fetch('/order/complete', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                merchant_uid: rsp.merchant_uid || ("ORD-" + Date.now()),
+                                product_name: rsp.name || productName,
+                                amount: totalAmount
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if(data.success) {
+                                alert("🎉 결제가 성공적으로 완료되었습니다!");
+                                location.href = "/order/success";
+                            } else {
+                                alert("PG 처리는 완료되었으나 쇼핑몰 DB 저장 중 에러가 발생했습니다.");
+                            }
+                        })
+                        .catch(err => {
+                            console.error("통신 장애 발생:", err);
+                            location.href = "/order/success";
+                        });
+                    } else {
+                        alert("❌ 결제 취소 또는 오류가 발생했습니다. 사유: " + rsp.error_msg);
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>

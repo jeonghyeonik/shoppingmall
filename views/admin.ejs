@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>쇼핑몰 관리자 시스템</title>
+    <style>
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 상단 헤더 바 */
+        .header-bar {
+            width: 100%;
+            background-color: #1e2229;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+        }
+
+        .header-container {
+            max-width: 1100px;
+            width: 100%;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .logo-area h1 { font-size: 20px; margin: 0; color: #fff; font-weight: 800; }
+        .menu-links a { color: #abb2bf; text-decoration: none; font-size: 14px; font-weight: 600; }
+        .menu-links a:hover { color: #fff; text-decoration: underline; }
+        .user-status { font-size: 13px; color: #fff; background-color: #2c313c; padding: 6px 14px; border-radius: 30px; }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        /* 탭 메뉴  */
+        .tab-menu {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background-color: #e1e4e8;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            color: #495057;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background-color: #1e2229;
+            color: #ffffff;
+        }
+
+        .dashboard-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e1e4e8;
+            display: none;
+        }
+
+        .dashboard-card.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #007bff;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-left: 4px solid #007bff;
+            padding-left: 10px;
+        }
+
+        /* 공통 테이블  */
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .admin-table th {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: 700;
+            padding: 12px 14px;
+            border-bottom: 2px solid #dee2e6;
+            text-align: left;
+        }
+
+        .admin-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+            vertical-align: middle;
+        }
+
+        /* 폼 그룹 양식 */
+        .form-inline {
+            display: grid;
+            grid-template-columns: 2fr 1fr 2fr auto;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px dashed #ced4da;
+        }
+
+        .form-inline input {
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .btn-add {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-add:hover { background-color: #0056b3; }
+
+        .btn-danger {
+            background-color: #fff5f5;
+            color: #e03131;
+            border: 1px solid #ffa8a8;
+            padding: 6px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .btn-danger:hover { background-color: #e03131; color: white; }
+
+        .select-status {
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+            font-family: inherit;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        .btn-save-status {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+
+        /* 수정 팝업창 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center; align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white; padding: 30px; border-radius: 12px;
+            width: 400px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        .modal-content h3 { margin-top: 0; margin-bottom: 15px; font-weight: bold; }
+        .modal-content label { font-size: 13px; font-weight: bold; color: #495057; display: block; margin-bottom: 5px; }
+        .modal-content input {
+            width: 100%; padding: 10px; margin-bottom: 15px;
+            border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box;
+            outline: none;
+        }
+        .modal-btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; }
+        .btn-success { background: #28a745; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-success:hover { background: #218838; }
+        .btn-secondary { background: #6c757d; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-secondary:hover { background: #5a6268; }
+    </style>
+</head>
+<body>
+
+    <div class="header-bar">
+        <div class="header-container">
+            <div class="logo-area">
+                <a href="/" style="text-decoration: none; color: inherit;">
+                    <h1>🛠️ 쇼핑몰 마스터 대시보드</h1>
+                </a>
+                <div class="menu-links">
+                    <a href="/">일반 쇼핑몰 홈으로 이동</a>
+                </div>
+            </div>
+            <div class="user-status">
+                👑 최고관리자 (<strong><%= user ? user.name : '관리자' %></strong>)
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div class="tab-menu">
+            <button class="tab-btn active" onclick="openTab('orders-tab', this)">🚚 주문 상태 관리</button>
+            <button class="tab-btn" onclick="openTab('products-tab', this)">📦 상품 관리</button>
+            <button class="tab-btn" onclick="openTab('users-tab', this)">👥 회원 관리</button>
+        </div>
+
+        <div id="orders-tab" class="dashboard-card active">
+            <h2 class="section-title">🚚 실시간 주문 현황 및 상태 배송 관리</h2>
+            <p style="color:#666; font-size:14px;">고객이 주문한 상품의 배송 상태를 동적으로 변경하거나 불필요한 주문 내역을 삭제할 수 있습니다.</p>
+
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>주문번호</th>
+                        <th>주문자명</th>
+                        <th>상품명(수량)</th>
+                        <th>총 금액</th>
+                        <th>주문일시</th>
+                        <th>배송 상태 변경 / 관리</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (typeof orders !== 'undefined' && orders && orders.length > 0) { %>
+                        <% orders.forEach(order => { %>
+                            <tr>
+                                <td>#<%= order.id %></td>
+                                <td><strong><%= order.user_real_name || order.user_name || order.username || '일반회원' %></strong></td>
+                                <td><%= order.product_name %> (<%= order.quantity || 1 %>개)</td>
+                                <td style="color:#e03131; font-weight:bold;">₩<%= (order.price * (order.quantity || 1)).toLocaleString() %></td>
+                                <td style="color:#666; font-size:13px;"><%= order.created_at %></td>
+                                <td>
+                                    <form action="/admin/order/update-status/<%= order.id %>" method="POST" style="display: inline-block; margin: 0;">
+                                        <select name="status" class="select-status">
+                                            <option value="결제 완료" <%= order.status === '결제 완료' ? 'selected' : '' %>>💳 결제 완료</option>
+                                            <option value="배송 중" <%= order.status === '배송 중' ? 'selected' : '' %>>🚚 배송 중</option>
+                                            <option value="배송 완료" <%= order.status === '배송 완료' ? 'selected' : '' %>>✅ 배송 완료</option>
+                                            <option value="주문 취소" <%= order.status === '주문 취소' ? 'selected' : '' %>>❌ 주문 취소</option>
+                                        </select>
+                                        <button type="submit" class="btn-save-status">변경</button>
+                                    </form>
+
+                                    <a href="/admin/order/delete/<%= order.id %>" class="btn-danger" style="margin-left: 6px;" onclick="return confirm('⚠️ 정말로 이 주문 내역을 데이터베이스에서 완전히 삭제하시겠습니까?');">주문삭제</a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: #868e96; padding: 40px 0;">들어온 주문 내역이 없습니다.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="products-tab" class="dashboard-card">
+            <h2 class="section-title">📦 쇼핑몰 상품 등록 및 삭제 관리</h2>
+
+            <form action="/admin/product/add" method="POST" class="form-inline">
+                <input type="text" name="name" placeholder="🛒 신규 상품명 입력" required>
+                <input type="number" name="price" placeholder="💰 가격(숫자만)" required>
+                <input type="text" name="image" placeholder="🖼️ 이미지 경로 (선택)">
+                <button type="submit" class="btn-add">➕ 상품 추가</button>
+            </form>
+
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>제품 ID</th>
+                        <th>이미지 썸네일</th>
+                        <th>제품명</th>
+                        <th>판매 가격</th>
+                        <th>작업</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (typeof products !== 'undefined' && products && products.length > 0) { %>
+                        <% products.forEach(product => { %>
+                            <tr>
+                                <td>#<%= product.id %></td>
+                                <td>
+                                    <img src="<%= product.image ? product.image : 'https://placehold.co/40x40?text=No+Img' %>"
+                                         width="40" height="40"
+                                         style="border-radius:4px; object-fit:cover;"
+                                         onerror="this.src='https://placehold.co/40x40?text=No+Img'">
+                                </td>
+                                <td style="font-weight:600;"><%= product.name %></td>
+                                <td>₩<%= product.price.toLocaleString() %></td>
+                                <td>
+                                    <button type="button" class="btn-save-status" style="background-color: #ffc107; color: #212529; margin-left: 0; margin-right: 5px;"
+                                            onclick="openEditModal('<%= product.id %>', '<%= product.name %>', '<%= product.price %>', '<%= product.image %>')">
+                                        수정
+                                    </button>
+                                    <a href="/admin/product/delete/<%= product.id %>" class="btn-danger" onclick="return confirm('정말로 이 상품을 삭제하시겠습니까?');">삭제</a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #868e96; padding: 40px 0;">진열된 상품이 없습니다.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="users-tab" class="dashboard-card">
+            <h2 class="section-title">👥 가입 회원 정보 명단 조회</h2>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>회원 아이디 (username)</th>
+                        <th>회원 실명 (name)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (typeof users !== 'undefined' && users && users.length > 0) { %>
+                        <% users.forEach((member, index) => { %>
+                            <tr>
+                                <td><%= index + 1 %></td>
+                                <td style="font-weight: 600;"><%= member.username %></td>
+                                <td><%= member.name %></td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="3" style="text-align: center; color: #868e96; padding: 40px 0;">가입된 회원이 없습니다.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h3>📝 상품 정보 수정</h3>
+            <form id="editForm" method="POST">
+                <label>상품명</label>
+                <input type="text" name="name" id="editName" required>
+                <label>가격 (₩)</label>
+                <input type="number" name="price" id="editPrice" required>
+                <label>이미지 주소 / 경로</label>
+                <input type="text" name="image" id="editImage">
+                <div class="modal-btns">
+                    <button type="button" class="btn-secondary" onclick="closeEditModal()">취소</button>
+                    <button type="submit" class="btn-success">수정 완료</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openTab(tabId, element) {
+            const cards = document.querySelectorAll('.dashboard-card');
+            cards.forEach(card => card.classList.remove('active'));
+
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            element.classList.add('active');
+        }
+
+        function openEditModal(id, name, price, image) {
+            document.getElementById('editForm').action = '/admin/product/edit/' + id;
+            document.getElementById('editName').value = name;
+            document.getElementById('editPrice').value = price;
+            document.getElementById('editImage').value = (image === 'null' || image === 'undefined') ? '' : image;
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target === modal) {
+                closeEditModal();
+            }
+        }
+    </script>
+</body>
+</html>

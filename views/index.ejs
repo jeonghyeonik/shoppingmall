@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>쇼핑몰 시스템</title>
+    <style>
+        /* 전체 기본 스타일 초기화 */
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 상단 헤더 & 네비게이션 바 */
+        .header-bar {
+            width: 100%;
+            background-color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .header-container {
+            max-width: 1000px;
+            width: 100%;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .logo-area h1 {
+            font-size: 22px;
+            margin: 0;
+            color: #111;
+            font-weight: 800;
+        }
+
+        .menu-links {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .menu-links a {
+            color: #0066cc;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .menu-links a:hover {
+            color: #004499;
+            text-decoration: underline;
+        }
+
+        .user-status {
+            font-size: 14px;
+            color: #495057;
+            background-color: #f1f3f5;
+            padding: 8px 16px;
+            border-radius: 30px;
+        }
+
+        .user-status a { text-decoration: none; font-weight: bold; }
+        .user-status .btn-mypage { color: #0066cc; margin-left: 12px; margin-right: 4px; }
+        .user-status .btn-logout { color: #dc3545; margin-left: 4px; }
+
+        /* 메인 컨텐츠 영역 */
+        .main-container {
+            max-width: 1000px;
+            width: 100%;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        .info-text {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .info-text a {
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 25px;
+            border-left: 4px solid #111;
+            padding-left: 10px;
+        }
+
+        /* 가로 슬라이더(캐러셀) 메인 컨테이너 */
+        .slider-wrapper {
+            position: relative;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .product-slider-container {
+            width: 100%;
+            overflow: hidden;
+            padding: 10px 5px;
+        }
+
+        .product-track {
+            display: flex;
+            gap: 20px;
+            transition: transform 0.4s ease-in-out;
+            width: max-content;
+        }
+
+        /* 개별 상품 카드 스타일 */
+        .product-card {
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 25px 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 310px;
+            width: 215px;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+
+        /* 상품 이미지 박스 */
+        .p-image-box {
+            width: 100%;
+            height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .p-image-box img {
+            max-height: 90px;
+            max-width: 90px;
+            object-fit: contain;
+        }
+
+        .p-name { font-size: 17px; font-weight: 700; color: #222; margin: 0 0 8px 0; }
+        .p-price { font-size: 15px; font-weight: bold; color: #e03131; margin-bottom: 15px; }
+
+        /* 버튼 그룹 스타일 주입  */
+        .p-btn-group {
+            display: flex;
+            gap: 6px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .btn-cart {
+            flex: 3;
+            display: block;
+            box-sizing: border-box;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            padding: 10px 0;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            text-align: center;
+        }
+        .btn-cart:hover { background-color: #218838; }
+
+        .btn-wish {
+            flex: 1;
+            display: block;
+            box-sizing: border-box;
+            background-color: #fff0f6;
+            border: 1px solid #ffadc7;
+            color: #ff4d4f;
+            text-decoration: none;
+            padding: 10px 0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .btn-wish:hover { background-color: #ff4d4f; color: white; border-color: #ff4d4f; }
+
+        /* 좌우 이동 화살표 버튼 스타일 */
+        .slide-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background-color: #ffffff;
+            border: 1px solid #ced4da;
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 10;
+            transition: all 0.2s;
+        }
+        .slide-arrow:hover { background-color: #1e2229; color: white; border-color: #1e2229; }
+        .arrow-left { left: -20px; }
+        .arrow-right { right: -20px; }
+
+        .slide-arrow:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background-color: #e1e4e8;
+            color: #ccc;
+        }
+
+        /* 롤링 배너 스타일 */
+        .banner-container {
+            max-width: 1000px;
+            width: 100%;
+            height: 220px;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            background-color: #ffffff;
+            border: 1px solid #e9ecef;
+            box-sizing: border-box;
+        }
+
+        .banner-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .banner-slide.active { opacity: 1; position: relative; }
+        .banner-slide img { max-width: 120px; height: auto; margin-bottom: 15px; }
+        .banner-text { font-size: 17px; font-weight: 700; color: #333; text-align: center; }
+
+        /* 전체 상품 보기 레이어 팝업창 스타일 */
+        .view-all-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            justify-content: center; align-items: center;
+            z-index: 2000;
+        }
+
+        .view-all-content {
+            background-color: #ffffff;
+            width: 90%;
+            max-width: 950px;
+            max-height: 80vh;
+            border-radius: 16px;
+            padding: 35px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .close-modal-btn {
+            position: absolute;
+            top: 25px; right: 25px;
+            background: none; border: none;
+            font-size: 28px; font-weight: bold;
+            cursor: pointer; color: #868e96;
+        }
+        .close-modal-btn:hover { color: #000; }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .modal-grid .product-card {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-bar">
+        <div class="header-container">
+            <div class="logo-area">
+                <a href="/" style="text-decoration: none; color: inherit;">
+                    <h1>💻 내 쇼핑몰</h1>
+                </a>
+                <div class="menu-links">
+                    <a href="/">상품목록</a>
+                    <a href="/cart">장바구니</a>
+                    <a href="/board">고객센터</a>
+
+                    <% if (typeof user !== 'undefined' && user && user.username === 'admin') { %>
+                        <a href="/admin" style="color: #e03131; font-weight: bold;">🛠️ 관리자 페이지</a>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="user-status">
+                <% if (user) { %>
+                    👋 <strong><%= user.username || user.id %>님</strong> 환영합니다!
+                    <a href="/mypage" class="btn-mypage">마이페이지</a> |
+                    <a href="/user/logout" class="btn-logout">로그아웃</a>
+                <% } else { %>
+                    🔒 로그인이 필요합니다.
+                    <a href="/user/login" style="color: #007bff;">로그인</a>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+
+        <div class="info-text">
+            현재 등록된 상품 수 : <%= (typeof products !== 'undefined') ? products.length : 0 %>개 |
+            <a onclick="openViewAllModal()" style="color: #0066cc; text-decoration: underline;">🔍 전체 목록 보기</a>
+        </div>
+
+        <h2 class="section-title">🔥 오늘의 추천 상품</h2>
+
+        <div class="slider-wrapper">
+            <button class="slide-arrow arrow-left" id="prevBtn" onclick="moveSlide(-1)">◀</button>
+
+            <div class="product-slider-container">
+                <div class="product-track" id="productTrack">
+                    <% if (typeof products !== 'undefined' && products.length > 0) { %>
+                        <% products.forEach(product => { %>
+                            <div class="product-card">
+                                <div class="p-image-box">
+                                    <% if (typeof product.image !== 'undefined' && product.image && product.image !== '' && product.image !== 'null') { %>
+                                        <img src="<%= product.image %>" alt="<%= product.name %>">
+                                    <% } else if (product.name === '맥북 프로') { %>
+                                        <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4bb.png" alt="맥북 프로" style="max-height: 80px;">
+                                    <% } else if (product.name === '아이폰') { %>
+                                        <img src="https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-finish-select-202309-6-1inch-black?wid=400&hei=400&fmt=jpeg&qlt=95&.v=1692923777972" alt="아이폰">
+                                    <% } else if (product.name === '아이패드') { %>
+                                        <img src="https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/ipad-10th-gen-storage-select-202212-blue-wifi?wid=400&hei=400&fmt=jpeg&qlt=95&.v=1670857314545" alt="아이패드">
+                                    <% } else if (product.name === '에어팟') { %>
+                                        <img src="https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/airpods-max-select-silver-202011?wid=400&hei=400&fmt=jpeg&qlt=95&.v=1604021223000" alt="에어팟">
+                                    <% } else { %>
+                                        <span style="font-size: 40px;">🎁</span>
+                                    <% } %>
+                                </div>
+                                <div>
+                                    <h3 class="p-name"><%= product.name %></h3>
+                                    <div class="p-price">₩<%= Number(product.price).toLocaleString() %></div>
+                                </div>
+                                <div class="p-btn-group">
+                                    <a href="/cart/add/<%= product.id %>" class="btn-cart">장바구니 담기</a>
+                                    <!-- wishProductIds 배열 안에 현재 상품 id가 있으면 빨간하트, 없으면 빈하트를 띄웁니다! -->
+                                    <% if (typeof wishProductIds !== 'undefined' && wishProductIds.includes(product.id)) { %>
+                                        <a href="/mypage/wish/<%= product.id %>" class="btn-wish">❤️</a>
+                                    <% } else { %>
+                                        <a href="/mypage/wish/<%= product.id %>" class="btn-wish" style="background-color: #f8f9fa; border-color: #ced4da; color: #6c757d;">♡</a>
+                                    <% } %>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <p style="text-align: center; color: #868e96; padding: 40px;">등록된 상품이 없습니다.</p>
+                    <% } %>
+                </div>
+            </div>
+
+            <button class="slide-arrow arrow-right" id="nextBtn" onclick="moveSlide(1)">▶</button>
+        </div>
+
+        <div class="banner-container">
+            <div class="banner-slide active">
+                <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4bb.png" alt="맥북 프로">
+                <div class="banner-text">💻 맥북 프로 가방 쏙! 대학생 필수 템 단독 특가 세일</div>
+            </div>
+            <div class="banner-slide">
+                <img src="https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-finish-select-202309-6-1inch-black?wid=400&hei=400&fmt=jpeg&qlt=95&.v=1692923777972" alt="아이폰">
+                <div class="banner-text">📱 아이폰 시리즈 기기변경 선착순 보상 혜택 찬스!</div>
+            </div>
+            <div class="banner-slide">
+                <img src="https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/ipad-10th-gen-storage-select-202212-blue-wifi?wid=400&hei=400&fmt=jpeg&qlt=95&.v=1670857314545" alt="아이패드">
+                <div class="banner-text">✏️ 아이패드 + 애플펜슬 결합 할인 기획전 오픈</div>
+            </div>
+            <div class="banner-slide">
+                <img src="https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/airpods-max-select-silver-202011?wid=400&hei=400&fmt=jpeg&qlt=95&.v=1604021223000" alt="에어팟">
+                <div class="banner-text">🎧 에어팟 노이즈 캔슬링과 함께 나만의 음악 세상으로 깊숙이</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="viewAllModal" class="view-all-modal">
+        <div class="view-all-content">
+            <button class="close-modal-btn" onclick="closeViewAllModal()">×</button>
+            <h2 class="section-title" style="border-left-color: #0066cc; margin-bottom: 10px;">📦 전체 상품 카탈로그</h2>
+            <p style="color:#666; font-size:14px; margin: 0 0 20px 0;">쇼핑몰에 등록된 전체 상품 목록입니다.</p>
+
+            <div class="modal-grid">
+                <% if (typeof products !== 'undefined' && products.length > 0) { %>
+                    <% products.forEach(product => { %>
+                        <div class="product-card">
+                            <div class="p-image-box">
+                                <% if (typeof product.image !== 'undefined' && product.image && product.image !== '' && product.image !== 'null') { %>
+                                    <img src="<%= product.image %>" alt="<%= product.name %>">
+                                <% } else if (product.name === '맥북 프로') { %>
+                                    <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4bb.png" alt="맥북 프로" style="max-height: 80px;">
+                                <% } else if (product.name === '아이폰') { %>
+                                    <img src="https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-finish-select-202309-6-1inch-black?wid=400&hei=400&fmt=jpeg&qlt=95&.v=1692923777972" alt="아이폰">
+                                <% } else if (product.name === '아이패드') { %>
+                                    <img src="https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/ipad-10th-gen-storage-select-202212-blue-wifi?wid=400&hei=400&fmt=jpeg&qlt=95&.v=1670857314545" alt="아이패드">
+                                <% } else if (product.name === '에어팟') { %>
+                                    <img src="https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/airpods-max-select-silver-202011?wid=400&hei=400&fmt=jpeg&qlt=95&.v=1604021223000" alt="에어팟">
+                                <% } else { %>
+                                    <span style="font-size: 40px;">🎁</span>
+                                <% } %>
+                            </div>
+                            <div>
+                                <h3 class="p-name"><%= product.name %></h3>
+                                <div class="p-price">₩<%= Number(product.price).toLocaleString() %></div>
+                            </div>
+                            <div class="p-btn-group">
+                                <a href="/cart/add/<%= product.id %>" class="btn-cart">장바구니 담기</a>
+                                <!-- wishProductIds 배열 안에 현재 상품 id가 있으면 빨간하트, 없으면 빈하트를 띄웁니다! -->
+                                <% if (typeof wishProductIds !== 'undefined' && wishProductIds.includes(product.id)) { %>
+                                    <a href="/mypage/wish/<%= product.id %>" class="btn-wish">❤️</a>
+                                <% } else { %>
+                                    <a href="/mypage/wish/<%= product.id %>" class="btn-wish" style="background-color: #f8f9fa; border-color: #ced4da; color: #6c757d;">♡</a>
+                                <% } %>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // 기존 롤링 배너 스크립트
+            const slides = document.querySelectorAll(".banner-slide");
+            let currentSlide = 0;
+            const slideInterval = 3000;
+
+            function nextSlide() {
+                slides[currentSlide].classList.remove("active");
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add("active");
+            }
+            setInterval(nextSlide, slideInterval);
+
+            // 장바구니 컨펌 팝업 스크립트
+            document.body.addEventListener("click", function(event) {
+                if (event.target.classList.contains("btn-cart")) {
+                    event.preventDefault();
+                    const productCard = event.target.closest(".product-card");
+                    const productName = productCard.querySelector(".p-name").innerText;
+
+                    const isConfirmed = confirm(`🛒 [${productName}] 상품을 장바구니에 담으시겠습니까?`);
+                    if (isConfirmed) {
+                        location.href = event.target.href;
+                    }
+                }
+            });
+
+            updateArrowStatus();
+        });
+
+        // 가로 슬라이더 전역 변수 및 제어 로직
+        let currentPosition = 0;
+        const cardWidth = 235;
+
+        function moveSlide(direction) {
+            const track = document.getElementById("productTrack");
+            const containerWidth = document.querySelector(".product-slider-container").clientWidth;
+            const trackWidth = track.scrollWidth;
+
+            const maxMove = trackWidth - containerWidth;
+
+            currentPosition += (direction * cardWidth);
+
+            if (currentPosition < 0) currentPosition = 0;
+            if (currentPosition > maxMove) currentPosition = maxMove;
+
+            track.style.transform = `translateX(-${currentPosition}px)`;
+
+            updateArrowStatus(maxMove);
+        }
+
+        function updateArrowStatus(maxMove) {
+            const track = document.getElementById("productTrack");
+            const containerWidth = document.querySelector(".product-slider-container").clientWidth;
+            const limit = maxMove || (track.scrollWidth - containerWidth);
+
+            document.getElementById("prevBtn").disabled = (currentPosition <= 0);
+            document.getElementById("nextBtn").disabled = (currentPosition >= limit || limit <= 0);
+        }
+
+        // 전체 보기 모달 제어 함수
+        function openViewAllModal() {
+            document.getElementById("viewAllModal").style.display = "flex";
+        }
+
+        function closeViewAllModal() {
+            document.getElementById("viewAllModal").style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById("viewAllModal");
+            if (event.target === modal) {
+                closeViewAllModal();
+            }
+        }
+    </script>
+</body>
+</html>
